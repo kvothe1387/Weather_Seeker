@@ -1,31 +1,34 @@
-import { promises as fs } from 'fs';
 
 // TODO: Define a City class with name and id properties
 class City {
-  constructor(public name: string, public id: string) { }
+  id: string;
+  name: string;
+
+  constructor(name: string, id: string) {
+    this.id = id;
+    this.name = name;
+  }
 }
 
 // TODO: Complete the HistoryService class
 class HistoryService {
 
-  private filePath = 'searchHistory.json';
+  private filePath: string;
+
+  constructor(filePath: string) {
+    this.filePath = filePath;
+  }
 
   // TODO: Define a read method that reads from the searchHistory.json file
   // private async read() {}
   private async read(): Promise<City[]> {
-    try {
-      const data = await fs.readFile(this.filePath, 'utf-8');
-      return JSON.parse(data) as City[];
-    } catch (error: string | any) {
-      if (error.code === 'ENOENT') {
-        return [];
-      } throw error;
-    }
+    const data = localStorage.getItem(this.filePath);
+    return data ? JSON.parse(data) as City[] : [];
   }
   // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
   // private async write(cities: City[]) {}
   private async write(cities: City[]): Promise<void> {
-    await fs.writeFile(this.filePath, JSON.stringify(cities));
+    localStorage.setItem(this.filePath, JSON.stringify(cities));
   }
   // TODO: Define a getCities method that reads the cities from the searcfhHistory.json file and returns them as an array of City objects
   // async getCities() {}
@@ -34,11 +37,12 @@ class HistoryService {
   }
   // TODO Define an addCity method that adds a city to the searchHistory.json file
   // async addCity(city: string) {}
-  async addCity(city: string) {
+  async addCity(id: string, name: string): Promise<City> {
     const cities = await this.read();
-    const newCity = new City((cities.length + 1).toString(), city);
+    const newCity = new City(id, name);
     cities.push(newCity);
     await this.write(cities);
+    return newCity;
   }
 
   // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
@@ -54,4 +58,4 @@ class HistoryService {
   }
 }
 
-export default new HistoryService();
+export default new HistoryService('searchHistory.json');
