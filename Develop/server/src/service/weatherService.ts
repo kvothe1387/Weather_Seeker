@@ -13,18 +13,18 @@ interface Coordinates {
 
 // TODO: Define a class for the Weather object
 class Weather {
-  icon: string;
   temperature: number;
   humidity: number;
   windSpeed: number;
   weatherDescription: string;
+  weatherIcon: string;
 
-  constructor(icon: string, temperature: number, humidity: number, windSpeed: number, weatherDescription: string) {
-    this.icon = icon;
+  constructor(temperature: number, humidity: number, windSpeed: number, weatherDescription: string, weatherIcon: string) {
     this.temperature = temperature;
     this.humidity = humidity;
     this.windSpeed = windSpeed;
     this.weatherDescription = weatherDescription;
+    this.weatherIcon = weatherIcon;
   }
 }
 
@@ -66,7 +66,7 @@ class WeatherService {
   // private buildGeocodeQuery(): string {}
 
   private buildGeocodeQuery(): string {
-    return `${this.baseURL}/weather?q=${this.city}&limit=1&appid=${this.apiKey}`;
+    return `${this.baseURL}/weather?q=${this.city}&appid=${this.apiKey}`;
   }
 
   // TODO: Create buildWeatherQuery method
@@ -90,7 +90,7 @@ class WeatherService {
     const url = this.buildWeatherQuery(coordinates);
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Fialed to fetch weather information.')
+      throw new Error('Fialed to fetch weather information.');
     }
     return response.json();
   }
@@ -98,10 +98,10 @@ class WeatherService {
   // TODO: Build parseCurrentWeather method
   // private parseCurrentWeather(response: any) {}
   private parseCurrentWeather(response: any): Weather {
-    const { temp, humidity, windSpeed } = response.current;
+    const { temp, humidity, wind_speed } = response.current;
     const { description, icon } = response.weather[0];
 
-    return new Weather(temp, humidity, windSpeed, description, icon);
+    return new Weather(temp, humidity, wind_speed, description, icon);
   }
   // TODO: Complete buildForecastArray method
   // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {}
@@ -109,7 +109,7 @@ class WeatherService {
     return weatherData.map(day => new Weather(
       day.temp.day,
       day.humidity,
-      day.windSpeed,
+      day.wind_speed,
       day.weather[0].description,
       day.weather[0].icon,
     ));
