@@ -41,7 +41,8 @@ class HistoryService {
   // async addCity(city: string) {}
   async addCity(city: string) {
     const toUpdate: City[] = await this.getCities();
-    const newCity = new City(city, v4());
+    const newCity = new City(city, v4()
+    )
     toUpdate.push(newCity);
     this.write(toUpdate);
   }
